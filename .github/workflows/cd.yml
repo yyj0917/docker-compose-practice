@@ -1,0 +1,35 @@
+name: CD - Deploy to EC2
+
+# CI(빌드)가 끝난 후(completed)에 실행되도록 설정
+on:
+  workflow_run:
+    workflows: ["CI - Build and Push Docker Images"]
+    types:
+      - completed
+  # 수동 실행 가능
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    # CI가 성공했을 때만 실행
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USERNAME }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            cd docker-compose-practice || git clone https://github.com/yyj0911/docker-compose-practice.git
+            cd docker-compose-practice
+
+            git pull origin main
+
+            docker compose -f docker-compose.prod.yml pull
+
+            docker compose -f docker-compose.prod.yml up -d
+
+            docker image prune -f

@@ -1,0 +1,48 @@
+version: '3.8'
+
+services:
+  nginx:
+    image: nginx:latest
+    container_name: my_nginx
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - frontend
+      - backend
+
+  backend:
+    # ★ 본인 Docker Hub ID로 수정 필수!
+    image: yunjunyunjun/web-test-backend:latest 
+    container_name: my_backend
+    expose:
+      - "4000" # 외부 포트(ports) 제거하고 내부 노출(expose)만 함
+    environment:
+      - PORT=4000
+      - DATABASE_URL=postgresql://user:password@db:5432/mydatabase
+    depends_on:
+      - db
+
+  frontend:
+    # ★ 본인 Docker Hub ID로 수정 필수!
+    image: yunjunyunjun/web-test-frontend:latest
+    container_name: my_frontend
+    expose:
+      - "3000"
+    environment:
+      # Nginx가 처리하므로 이제 내부 주소가 아닌 도메인 주소 사용
+      - NEXT_PUBLIC_API_URL=http://015b.shop/api 
+    depends_on:
+      - backend
+
+  db:
+    image: postgres:15-alpine
+    container_name: my_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydatabase
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data

@@ -4,3 +4,6 @@ node_modules/
 postgres_data/
 dist/
 .next/
+logs/
+*.log
+*.pid
