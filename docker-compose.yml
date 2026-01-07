@@ -1,7 +1,7 @@
 version: '3.8'
 
 services:
-  # 1. 데이터베이스 서비스
+  # 데이터베이스 서비스
   db:
     image: postgres:15-alpine
     container_name: my_postgres
@@ -15,7 +15,7 @@ services:
     volumes:
       - ./postgres_data:/var/lib/postgresql/data
 
-  # 2. 백엔드 서비스
+  # 백엔드 서비스
   backend:
     build: ./backend             # backend 폴더의 Dockerfile을 보고 빌드함
     container_name: my_backend
@@ -31,7 +31,7 @@ services:
       - ./backend:/app           # 내 컴퓨터의 코드를 컨테이너와 동기화 (수정 시 바로 반영)
       - /app/node_modules        # 컨테이너 내부의 모듈은 덮어쓰지 않음 (충돌 방지)
 
-  # 3. 프론트엔드 서비스
+  # 프론트엔드 서비스
   frontend:
     build: ./frontend
     container_name: my_frontend
@@ -39,7 +39,7 @@ services:
       - "3000:3000"
     environment:
       # 브라우저에서 백엔드로 요청 보낼 때 주소
-      - NEXT_PUBLIC_API_URL=http://localhost:4000
+      - NEXT_PUBLIC_API_URL=http://54.158.37.252:4000
     depends_on:
       - backend                  # 백엔드가 켜진 후 실행
     volumes:

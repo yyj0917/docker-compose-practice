@@ -17,7 +17,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
 
   // API 주소 (환경변수로 빼는 게 좋지만 지금은 하드코딩)
-  const API_URL = "http://localhost:4000/api/users";
+  const API_URL = `${process.env.NEXT_PUBLIC_API_URL}/api/users`;
 
   // 1. 데이터 가져오기 (Read)
   const fetchUsers = async () => {
